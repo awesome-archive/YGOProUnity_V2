@@ -285,19 +285,19 @@ public class Program : MonoBehaviour
         });
         go(300, () =>
         {
-            InterString.initialize("config\\translation.conf");
+            InterString.initialize("config/translation.conf");
             GameTextureManager.initialize();
-            Config.initialize("config\\config.conf");
-            GameStringManager.initialize("config\\strings.conf");
-            if (File.Exists("cdb\\strings.conf"))
+            Config.initialize("config/config.conf");
+            GameStringManager.initialize("config/strings.conf");
+            if (File.Exists("cdb/strings.conf"))
             {
-                GameStringManager.initialize("cdb\\strings.conf");
+                GameStringManager.initialize("cdb/strings.conf");
             }
-            if (File.Exists("diy\\strings.conf"))
+            if (File.Exists("diy/strings.conf"))
             {
-                GameStringManager.initialize("diy\\strings.conf");
+                GameStringManager.initialize("diy/strings.conf");
             }
-            YGOSharp.BanlistManager.initialize("config\\lflist.conf");
+            YGOSharp.BanlistManager.initialize("config/lflist.conf");
 
             var fileInfos = (new DirectoryInfo("cdb")).GetFiles();
             for (int i = 0; i < fileInfos.Length; i++)
@@ -306,7 +306,7 @@ public class Program : MonoBehaviour
                 {
                     if (fileInfos[i].Name.Substring(fileInfos[i].Name.Length - 4, 4) == ".cdb")
                     {
-                        YGOSharp.CardsManager.initialize("cdb\\" + fileInfos[i].Name);
+                        YGOSharp.CardsManager.initialize("cdb/" + fileInfos[i].Name);
                     }
                 }
             }
@@ -320,25 +320,28 @@ public class Program : MonoBehaviour
                     {
                         if (fileInfos[i].Name.Substring(fileInfos[i].Name.Length - 4, 4) == ".cdb")
                         {
-                            YGOSharp.CardsManager.initialize("diy\\" + fileInfos[i].Name);
+                            YGOSharp.CardsManager.initialize("diy/" + fileInfos[i].Name);
                         }
                     }
                 }
             }
 
-
-            fileInfos = (new DirectoryInfo("pack")).GetFiles();
-            for (int i = 0; i < fileInfos.Length; i++)
+            if (Directory.Exists("pack"))
             {
-                if (fileInfos[i].Name.Length > 3)
+                fileInfos = (new DirectoryInfo("pack")).GetFiles();
+                for (int i = 0; i < fileInfos.Length; i++)
                 {
-                    if (fileInfos[i].Name.Substring(fileInfos[i].Name.Length - 3, 3) == ".db")
+                    if (fileInfos[i].Name.Length > 3)
                     {
-                        YGOSharp.PacksManager.initialize("pack\\" + fileInfos[i].Name);
+                        if (fileInfos[i].Name.Substring(fileInfos[i].Name.Length - 3, 3) == ".db")
+                        {
+                            YGOSharp.PacksManager.initialize("pack/" + fileInfos[i].Name);
+                        }
                     }
                 }
+                YGOSharp.PacksManager.initializeSec();
             }
-            YGOSharp.PacksManager.initializeSec();
+
             initializeALLservants();
             loadResources();
 
@@ -829,7 +832,8 @@ public class Program : MonoBehaviour
         {
             Screen.SetResolution(1300, 700, false);
         }
-        Application.targetFrameRate = 120;
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 144;
         mouseParticle = Instantiate(new_mouse);
         instance = this;
         initialize();
@@ -925,6 +929,8 @@ public class Program : MonoBehaviour
     {
         preWid = Screen.width;
         preheight = Screen.height;
+        //if (setting != null)
+        //    setting.setScreenSizeValue();
         Program.notGo(fixScreenProblems);
         Program.go(500, fixScreenProblems);
     }
@@ -936,8 +942,24 @@ public class Program : MonoBehaviour
 #endif
     }
 
+    public static void PrintToChat(object o)
+    {
+        try
+        {
+            instance.cardDescription.mLog(o.ToString());
+        }
+        catch
+        {
+            DEBUGLOG(o);
+        }
+    }
+
     void gameStart()
     {
+        if (UIHelper.shouldMaximize())
+        {
+            UIHelper.MaximizeWindow();
+        }
         backGroundPic.show();
         shiftToServant(menu);
     }
@@ -946,6 +968,7 @@ public class Program : MonoBehaviour
 
     public static bool MonsterCloud = false;
     public static float fieldSize = 1;
+    public static bool longField = false;
 
     void OnApplicationQuit()
     {
@@ -975,4 +998,8 @@ public class Program : MonoBehaviour
 
     #endregion
 
+    public static void gugugu()
+    {
+        PrintToChat(InterString.Get("非常抱歉，因为技术原因，此功能暂时无法使用。请关注官方网站获取更多消息。"));
+    }
 }

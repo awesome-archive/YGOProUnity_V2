@@ -27,6 +27,7 @@ public class SelectServer : WindowServantSP
         inputPort = UIHelper.getByName<UIInput>(gameObject, "port_");
         inputPsw = UIHelper.getByName<UIInput>(gameObject, "psw_");
         inputVersion = UIHelper.getByName<UIInput>(gameObject, "version_");
+        set_version("0x" + String.Format("{0:X}", Config.ClientVersion));
         SetActiveFalse();
     }
 
@@ -75,7 +76,7 @@ public class SelectServer : WindowServantSP
         inputIP.value = ip;
         inputPort.value = port;
         inputPsw.value = psw;
-        inputVersion.value = version;
+        //inputVersion.value = version;
     }
 
     public override void show()
@@ -95,11 +96,11 @@ public class SelectServer : WindowServantSP
     void printFile(bool first)
     {
         list.Clear();
-        if (File.Exists("config\\hosts.conf") == false)
+        if (File.Exists("config/hosts.conf") == false)
         {
-            File.Create("config\\hosts.conf").Close();
+            File.Create("config/hosts.conf").Close();
         }
-        string txtString = File.ReadAllText("config\\hosts.conf");
+        string txtString = File.ReadAllText("config/hosts.conf");
         string[] lines = txtString.Replace("\r", "").Split("\n");
         for (int i = 0; i < lines.Length; i++)
         {
@@ -142,11 +143,6 @@ public class SelectServer : WindowServantSP
         string portString = UIHelper.getByName<UIInput>(gameObject, "port_").value;
         string pswString = UIHelper.getByName<UIInput>(gameObject, "psw_").value;
         string versionString = UIHelper.getByName<UIInput>(gameObject, "version_").value;
-        if (versionString=="")  
-        {
-            UIHelper.getByName<UIInput>(gameObject, "version_").value = "0x133d";
-            versionString = "0x133d";
-        }
         KF_onlineGame(Name, ipString, portString, versionString, pswString);
     }
 
@@ -175,7 +171,7 @@ public class SelectServer : WindowServantSP
                 {
                     all += list.items[i] + "\r\n";
                 }
-                File.WriteAllText("config\\hosts.conf", all);
+                File.WriteAllText("config/hosts.conf", all);
                 printFile(false);
                 (new Thread(() => { TcpHelper.join(ipString, name, portString, pswString,versionString); })).Start();
             }
